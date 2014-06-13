@@ -1,3 +1,4 @@
+""" Biquad calculator """
 import math
 
 class BiquadCalc:
