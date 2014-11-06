@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 import printer
 import cross
 import pwmm
