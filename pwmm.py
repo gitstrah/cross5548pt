@@ -46,6 +46,8 @@ class TAS5548:
     def setMasterVolume(self, volume):
         "volume[dB]: -128 to 17.5"
         self.logger.log("Master volume = %s dB" % volume, LogLevel.Warning)
+        if volume<-128 or volume>17.5:
+            self.logger.log("Volume value will be truncated to fit into allowed range: -128 to 17.5 dB", LogLevel.Warning)
         self.i2c.writeList(0xD9, self.getVolumeData(volume))        
     
     def setChannelVolume(self, pwmChannel, volume):

@@ -25,6 +25,7 @@ def parseNumber(s):
         return float('NaN')
 
 def parseVolume(argVolume):
+    global isDb
     isDb = True    
     vol = parseNumber(argVolume)
     if "%" in argVolume:
@@ -63,8 +64,7 @@ commands = { "-v": parseVolume,
 for i in range(len(sys.argv)):
     arg = sys.argv[i] 
     if arg in commands:
-        func = commands[arg]
-        zz = inspect.getargspec(func)
+        func = commands[arg]        
         if len(inspect.getargspec(func)[0]) == 0:
             commands[arg]
         else:
@@ -74,7 +74,9 @@ for i in range(len(sys.argv)):
 
 i2c = hardware.I2C(i2c_addr, logger)
 pwm = pwmm.TAS5548(i2c, logger)    
-logger.log("setting volume to %s %s" % (volume, ("db" if isDb else "%")), LogLevel.Warning)    
+logger.log("setting volume to %s %s" % (volume, ("db" if isDb else "%")), LogLevel.Warning)
+if not isDb:
+    volume = 145.5 * volume / 100 - 128    
 pwm.setMasterVolume(volume)
         
 
