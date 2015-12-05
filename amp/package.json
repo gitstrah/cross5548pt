@@ -1,0 +1,22 @@
+{
+  "name": "amp",
+  "version": "0.0.1",
+  "description": "A simpleMPD watcher to control an amplifier hardware",
+  "author": "Andrey Vasilyev <gitstrah@gmail.com>",
+  "scripts": {
+    "start": "nice node amp.js"
+  },
+  "main": "amp.js",
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/gitstrah/cross5548pt"
+  },
+  "dependencies": {
+    "mpd": "^1.2.x"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "private": true,
+  "license": "MIT"
+}

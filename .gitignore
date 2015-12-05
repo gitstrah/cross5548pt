@@ -53,3 +53,6 @@ coverage.xml
 docs/_build/
 
 *.pyc
+
+# node_modules
+node_modules/
