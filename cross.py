@@ -1,7 +1,7 @@
 """ Crossover class """
 from biquad import BiquadCalc
-from printer import Log
-from printer import LogLevel
+from log import Log
+from log import LogLevel
 from bytehelper import ByteHelper
 
 class Biquad:

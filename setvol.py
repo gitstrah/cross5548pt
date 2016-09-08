@@ -1,4 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+
+# DO NOT USE !
+
 import sys
 import printer
 import hardware

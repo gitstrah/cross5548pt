@@ -1,10 +1,10 @@
-#!/bin/sh -e
+#!/usr/bin/bash
 ##########################################################
 ## don't forget to call this script from /etc/rc.local  ##
 ##########################################################
 # set volume down just in case
-mpc volume 15
+/usr/bin/mpc volume 10
 # initialize the hardware
-python /root/cr/ctest.py 2>&1 > /root/cr/logs/logfile.log
+python /opt/amp/init.py 2>&1 > /opt/amp/logfile.log
 # start MPD watcher
-nice node /root/cr/amp/amp.js 2>&1 > /root/cr/logs/logfile.log &
+nice node /opt/amp/amp/mpdclient.js 2>&1 > /opt/amp/logfile.log

@@ -22,8 +22,8 @@ class BiquadCalc:
         b0 = self.N*self.W2
         b1 = 2*b0
         b2 = b0
-        a1 = 2*self.N*(self.W2-1)
-        a2 = self.N*(self.W2 - self.WQ + 1) 
+        a1 = -2*self.N*(self.W2-1)
+        a2 = -self.N*(self.W2 - self.WQ + 1) 
         return [b0, b1, b2, a1, a2]
     
     def hipass(self):
@@ -34,7 +34,7 @@ class BiquadCalc:
         b0 = self.N
         b1 = -2*self.N
         b2 = b0
-        a1 = 2*self.N*(self.W2-1)
-        a2 = self.N*(self.W2 - self.WQ + 1)
+        a1 = -2*self.N*(self.W2-1)
+        a2 = -self.N*(self.W2 - self.WQ + 1)
         return [b0, b1, b2, a1, a2]
     

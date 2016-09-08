@@ -1,10 +1,10 @@
 {
   "name": "amp",
   "version": "0.0.1",
-  "description": "A simpleMPD watcher to control an amplifier hardware",
+  "description": "A simpleMPD watcher client to control an amplifier hardware",
   "author": "Andrey Vasilyev <gitstrah@gmail.com>",
   "scripts": {
-    "start": "nice node amp.js"
+    "start": "nice node mpdclient.js"
   },
   "main": "amp.js",
   "repository": {

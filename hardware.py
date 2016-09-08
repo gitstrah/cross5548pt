@@ -1,12 +1,9 @@
 """ Hardware abstraction """
 from time import sleep
-
-_BeagleBone = 0
-if _BeagleBone:
-    from Adafruit_I2C import Adafruit_I2C
+from Adafruit_I2C import Adafruit_I2C
     
 from bytehelper import ByteHelper
-from printer import LogLevel
+from log import LogLevel
 
 class I2C:
     """I2C hardware abstraction"""
@@ -14,21 +11,32 @@ class I2C:
     i2c = None
     logger = None
     bt = ByteHelper()
-    def __init__(self, address, logger):
+    def __init__(self, address, logger, beagleBone):
         self.address = address
         self.logger = logger
         self.logger.log("I2C created on %s" % hex(address), LogLevel.Debug)   
-        if _BeagleBone:
+        self.beagleBone = beagleBone
+        if beagleBone:
             self.i2c = Adafruit_I2C(self.address)     
     
     def readByte(self, addr):
-        if _BeagleBone:
+        if self.beagleBone:
             return self.i2c.readU8(addr)
         return 0
     
+    def readWord(self, addr):
+        b = [0,0,0,0]
+        bt = ByteHelper()
+        if self.beagleBone:
+            b = self.i2c.readList(addr, 4)
+            self.logger.log("verify: %s" % self.logger.bytesToHex(b), LogLevel.Debug, 2)
+        word = bt.join4(b)
+        self.logger.log("word: %s" % self.logger.wordsToHex([word]), LogLevel.Debug, 2)
+        return word
+
     def writeByte(self, addr, byte):
         self.logger.log("i2c [{0:0>2X}] <= {1:0>2X}".format(addr, byte), LogLevel.Debug, 1)
-        if _BeagleBone:
+        if self.beagleBone:
             self.i2c.write8(addr, byte)
     
     def writeList(self, addr, data):
@@ -42,10 +50,10 @@ class I2C:
                 b.append(data[(i)*4 + j])
             self.logger.log("i2c [{0:0>2X}] <= {1}".format(a, self.logger.bytesToHex(b)), LogLevel.Debug, 1)
             
-            if _BeagleBone:
+            if self.beagleBone:
                 self.i2c.writeList(a, b)
                 #sleep(0.2)
-        if _BeagleBone:
+        if self.beagleBone:
             b = self.i2c.readList(addr, len(data))
             #self.logger.log("    verify: %s" % b)
             self.logger.log("verify: %s" % self.logger.bytesToHex(b), LogLevel.Debug, 2)

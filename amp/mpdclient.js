@@ -3,8 +3,8 @@ var exec = require('child_process').exec;
 var mpdlib = require('mpd'),
     cmd = mpdlib.cmd;
 
-var cmd_play = "python /root/cr/unmute.py";
-var cmd_stop = "python /root/cr/mute.py";
+var cmd_play = "python /opt/amp/unmute.py";
+var cmd_stop = "python /opt/amp/mute.py";
 var errorMonitorInterval = 600000;
 
 var refreshMPD = function() {

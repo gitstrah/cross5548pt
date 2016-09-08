@@ -1,6 +1,6 @@
 """ TI TAS5548 PWM modulator """
 from bytehelper import ByteHelper
-from printer import LogLevel
+from log import LogLevel
 
 class TAS5548:
     i2c = {};
@@ -50,11 +50,26 @@ class TAS5548:
             self.logger.log("Volume value will be truncated to fit into allowed range: -128 to 17.5 dB", LogLevel.Warning)
         self.i2c.writeList(0xD9, self.getVolumeData(volume))        
     
+    def getMasterVolume(self):
+        "volume[dB]: -128 to 17.5"
+        volume = self.i2c.readWord(0xD9)        
+        #x = 0x245 - int(0x245*(volume+128)/145.5)
+        x = (0x245-volume) * 145.5 / 0x245 - 128
+        self.logger.log("Master volume = %s dB" % x, LogLevel.Warning)
+        if x<-128 or x>17.5:
+            self.logger.log("Volume does not fit into allowed range: -128 to 17.5 dB", LogLevel.Error)
+        return x
+    
     def setChannelVolume(self, pwmChannel, volume):
+        "volume[dB]: -128 to 17.5"
         # individual channel volume
         self.validatePWMChannel(pwmChannel)
         self.logger.log("Channel %s volume = %s" % (pwmChannel, volume), LogLevel.Warning)
-    
+        if volume<-128 or volume>17.5:
+            self.logger.log("Volume value will be truncated to fit into allowed range: -128 to 17.5 dB", LogLevel.Warning)
+        addresses = [0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8]
+        self.i2c.writeList(addresses[pwmChannel-1], self.getVolumeData(volume))
+
     def setInputMixer(self, pwmChannel, i2sChannel, i2sSubChannel):
         # Input mixers 1, 2, 3, 4, 5, 6, 7, and 8 are mapped into registers 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
         # and 0x48, respectively.
@@ -76,5 +91,28 @@ class TAS5548:
         addresses = [0x51, 0x58, 0x5F, 0x66, 0x6D, 0x74, 0x7B, 0x72]        
         self.i2c.writeWords(addresses[pwmChannel-1] + biquadNumber - 1, biquad.coefficients)         
     
-    
+    def setBand(self, pwmChannel, biquads):
+        # set specific biquad
+        for i in range(0, len(biquads)):
+            self.logger.log(biquads[i].name, LogLevel.Debug)
+            self.setBiquadCoefficients(pwmChannel, i+1, biquads[i])
+        
+    def init(self):
+        # disable DAP automute
+        self.logger.log("disable DAP automute", LogLevel.Warning)
+        ctrl = self.i2c.readByte(0x04)
+        ctrl = ctrl & ~0x10
+        self.i2c.writeByte(0x04, ctrl)
+        # --- reset automute control ---
+        self.logger.log("reset automute control", LogLevel.Warning)
+        # 0x00: Set input automute threshold less than -90dBFS
+        # 0x0F: Set input automute and output automute delay to 178.8 ms
+        self.i2c.writeByte(0x14, 0x0F)
+        # reset PWM automute control
+        self.logger.log("reset PWM automute", LogLevel.Warning)
+        # 0xF0: Set PWM automute threshold -42dB below input automute threshold
+        # 0x07: Set back-end reset period 800 ms
+        self.i2c.writeByte(0x15, 0xF7)
+        # --- ---
+        
     

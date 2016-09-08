@@ -13,3 +13,6 @@ class ByteHelper:
         a2 = int((x >> 16) & 0xff)
         a1 = int(x >> 24) & 0xff 
         return [a1, a2, a3, a4]
+
+    def join4(self, x):
+        return x[3] & 0xff | (x[2] & 0xFF) << 8 | (x[1] & 0xFF) << 16 | (x[0] & 0xFF) << 24

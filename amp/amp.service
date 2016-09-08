@@ -1,0 +1,12 @@
+[Unit]
+Description=Digital Amplifier
+After=sound.target
+Requires=mpd.service
+After=mpd.service
+
+[Service]
+ExecStart=/opt/amp/amp/amp.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
