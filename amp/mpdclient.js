@@ -1,11 +1,16 @@
+// TODO: recover MPD connection if MPD has restarted
+// TODO: get external commands as cmd-line arguments
+
 var fs = require('fs');
 var exec = require('child_process').exec;
 var mpdlib = require('mpd'),
     cmd = mpdlib.cmd;
 
-var cmd_play = "python /opt/amp/unmute.py";
-var cmd_stop = "python /opt/amp/mute.py";
+var cmd_unmute = "python /opt/amp/unmute.py";
+var cmd_mute = "python /opt/amp/mute.py";
 var errorMonitorInterval = 600000;
+var muteTimeout = 5000; // wait for 5s before muting
+var muteTimer = null;
 
 var refreshMPD = function() {
     client.sendCommand(cmd("status", []), function(err, msg) {
@@ -14,13 +19,32 @@ var refreshMPD = function() {
             var data = mpdlib.parseKeyValueMessage(msg);
             console.log(data.state);
             if (data.state == "play") {
-                execute(cmd_play, console.log);
+				executePlay();
             } else if (data.state == "stop" || data.state == "pause") {
-                execute(cmd_stop, console.log);
+				executeStop();
             };
         }
     });
 };
+
+var executePlay = function() {
+	abortMute();
+	execute(cmd_unmute, console.log);
+}
+
+var executeStop = function() {
+	abortMute();
+	muteTimer = setTimeout(function() {
+		execute(cmd_mute, console.log);
+	}, muteTimeout);
+}
+
+var abortMute = function() {
+	if(muteTimer) {
+		clearTimeout(muteTimer);
+		muteTimer = null;
+	}
+}
 
 var firstErrDate, lastErrMessage = "",
     errCount = 0;
